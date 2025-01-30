@@ -17,7 +17,6 @@ class Env:
     def load(cls) -> Self:
         args = {}
         for field in fields(cls):
-            print(field.default)
             if field.default == MISSING:
                 val = os.environ[f"{cls.PREFIX}_{field.name.upper()}"]
             else:

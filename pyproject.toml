@@ -8,6 +8,9 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.13"
 routeros-api = "^0.18.1"
+kubernetes = "^32.0.0"
+structlog = "^25.1.0"
+pydantic = "^2.10.6"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -18,3 +21,10 @@ pyright = "^1.1.393"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["D100", "D203", "D213", "TD003", "FIX002"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN", "D", "S101"]
