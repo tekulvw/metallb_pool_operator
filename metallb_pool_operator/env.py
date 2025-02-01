@@ -1,17 +1,21 @@
 import os
 from dataclasses import MISSING, dataclass, fields
-from typing import Self
+from typing import ClassVar, Self
 
 
 @dataclass
 class Env:
-    PREFIX = "METALLB_POOL_OP"
+    PREFIX: ClassVar = "METALLB_POOL_OP"
+
     ip_address: str
     username: str
     password: str
+    pool_name: str
+    pool_namespace: str
     port: int = 8728
     use_ssl: bool = False
     ssl_verify: bool = True
+    static_addresses: str = ""
 
     @classmethod
     def load(cls) -> Self:
