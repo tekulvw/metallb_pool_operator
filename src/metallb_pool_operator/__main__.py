@@ -27,7 +27,17 @@ def tick() -> None:
     pools = get_ipv6_pools()
     log.info("got pools", addresses=pools)
 
-    patch_ipv6_pool(name=e.pool_name, namespace=e.pool_namespace, new_addresses=pools)
+    kube_pools = [p.with_postfix(0x3000, 116) for p in pools]
+    log.info("determined kube pools", pools=kube_pools)
+
+    new_addrs = [p.prefix for p in kube_pools]
+    new_addrs = [*e.static_addresses.split(","), *new_addrs]
+
+    patch_ipv6_pool(
+        name=e.pool_name,
+        namespace=e.pool_namespace,
+        new_addresses=new_addrs,
+    )
     log.info("patched pool", name=e.pool_name, namespace=e.pool_namespace)
 
 

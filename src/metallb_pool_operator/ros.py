@@ -1,4 +1,6 @@
+import ipaddress
 from collections.abc import Sequence
+from typing import Self
 
 import routeros_api
 import structlog
@@ -11,12 +13,24 @@ class IPv6Pool(BaseModel):
     id: str
     name: str
     prefix: str
-    prefix_length: str = Field(alias="prefix-length")
+    prefix_length: int = Field(alias="prefix-length")
     expires_after: str = Field(alias="expires-after")
     dynamic: str
 
+    def with_postfix(self, postfix: int, cidr: int) -> Self:
+        network = ipaddress.ip_network(self.prefix)
+        base_addr = int(network.network_address)
 
-def get_ipv6_pools() -> Sequence[str]:
+        pool_base_addr = base_addr | postfix
+        structured_pool_addr = ipaddress.IPv6Address(pool_base_addr)
+        pool_network = ipaddress.IPv6Network((structured_pool_addr, cidr), strict=False)
+
+        ret = self.model_copy()
+        ret.prefix = str(pool_network)
+        return ret
+
+
+def get_ipv6_pools() -> Sequence[IPv6Pool]:
     env = Env.load()
 
     pool = routeros_api.RouterOsApiPool(
@@ -34,6 +48,7 @@ def get_ipv6_pools() -> Sequence[str]:
     ipv6_pools = [IPv6Pool(**p) for p in api.get_resource("/ipv6/pool").get()]
 
     log.info("got pools", **{p.name: p.prefix for p in ipv6_pools})
+    return ipv6_pools
 
 
 if __name__ == "__main__":

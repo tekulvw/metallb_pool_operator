@@ -11,8 +11,8 @@ def patch_ipv6_pool(name: str, namespace: str, new_addresses: Sequence[str]) -> 
     api.patch_namespaced_custom_object(
         group="metallb.io",
         version="v1beta1",
-        plural="addresspools",
-        namespace="something",
+        plural="ipaddresspools",
+        namespace=namespace,
         name=name,
         body=patch,
     )

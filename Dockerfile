@@ -1,6 +1,7 @@
 FROM python:3.13-alpine
 
 ENV PYTHON_UNBUFFERED=1
+ENV UV_COMPILE_BYTECODE=1
 
 COPY --from=ghcr.io/astral-sh/uv:0.5.26 /uv /uvx /bin/
 
@@ -15,6 +16,4 @@ COPY src ./src
 
 RUN uv sync --frozen --no-dev
 
-ENV UV_NO_SYNC=1
-
-CMD ["uv", "run", "--", "python", "-m", "metallb_pool_operator"]
+CMD ["uv", "run", "--no-sync", "src/metallb_pool_operator"]
